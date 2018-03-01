@@ -5,16 +5,7 @@ subroutine solver(mesh)
   type(meshdef) :: mesh
   integer(kint) :: i, n
 
-!write(*,*)"mesh%A"
-!write(*,"(1p3e10.2)")mesh%A
-!write(*,*)"mesh%B"
-!write(*,"(1p3e10.2)")mesh%B
-
   call LU(3*mesh%nnode, mesh%A, mesh%B, mesh%X)
-
-!write(*,*)"mesh%X"
-!write(*,"(1p3e10.2)")mesh%X
-
   call residual(3*mesh%nnode, mesh%A, mesh%B, mesh%X)
 end subroutine solver
 

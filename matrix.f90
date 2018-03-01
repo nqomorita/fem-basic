@@ -101,6 +101,13 @@ subroutine stress_update(mesh)
   real(kdouble) :: q_elem(24)
   integer(kint), allocatable :: inode(:)
 
+  do i=1,mesh%nnode
+    do j=1,6
+      mesh%nstrain(j,i) = 0.0d0
+      mesh%nstress(j,i) = 0.0d0
+    enddo
+  enddo
+
   allocate(inode(mesh%nnode))
   inode = 0
 
@@ -127,8 +134,8 @@ subroutine stress_update(mesh)
       in = mesh%elem(i,icel)
       inode(in) = inode(in) + 1
       do j=1,6
-        mesh%nstrain(j,in) = mesh%nstrain(j,in) + estrain(j)
-        mesh%nstress(j,in) = mesh%nstress(j,in) + estress(j)
+        mesh%nstrain(j,in) = mesh%nstrain(j,in) + nstrain(i,j)
+        mesh%nstress(j,in) = mesh%nstress(j,in) + nstress(i,j)
       enddo
       mesh%q(3*in-2) = q_elem(3*i-2)
       mesh%q(3*in-1) = q_elem(3*i-1)
@@ -175,3 +182,16 @@ subroutine get_mises(s, mises)
   smises = 0.5d0 * ((s11-ps)**2 + (s22-ps)**2 + (s33-ps)**2) + s12**2 + s23**2 + s13**2
   mises  = dsqrt( 3.0d0 * smises )
 end subroutine get_mises
+
+subroutine get_RHS(mesh)
+  use util
+  implicit none
+  type(meshdef) :: mesh
+  integer(kint) :: i
+
+  do i=1,mesh%nnode
+    mesh%B(3*i-2) = mesh%f(3*i-2) - mesh%q(3*i-2)
+    mesh%B(3*i-1) = mesh%f(3*i-1) - mesh%q(3*i-1)
+    mesh%B(3*i  ) = mesh%f(3*i  ) - mesh%q(3*i  )
+  enddo
+end subroutine get_RHS

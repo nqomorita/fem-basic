@@ -22,5 +22,5 @@ util.o: util.f90
 	$(FC) -c $(F_OPT) util.f90
 
 clean:
-	rm *.o *.mod
+	rm *.o *.mod a.out
 
