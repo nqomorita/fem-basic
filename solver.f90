@@ -3,25 +3,19 @@ subroutine solver(mesh)
   use util
   implicit none
   type(meshdef) :: mesh
-  integer(kint) :: i, n, ndof, nndof
-
-  n    = mesh%nnode
-  ndof = mesh%ndof
-  nndof= n*ndof
-  allocate(mesh%X(n*ndof))
-  mesh%X = 0.0d0
+  integer(kint) :: i, n
 
 !write(*,*)"mesh%A"
-!write(*,"(24e10.2)")mesh%A
+!write(*,"(1p3e10.2)")mesh%A
 !write(*,*)"mesh%B"
-!write(*,"(24e10.2)")mesh%B
+!write(*,"(1p3e10.2)")mesh%B
 
-  call LU(nndof, mesh%A, mesh%B, mesh%X)
+  call LU(3*mesh%nnode, mesh%A, mesh%B, mesh%X)
 
 !write(*,*)"mesh%X"
-!write(*,"(24e10.2)")mesh%X
+!write(*,"(1p3e10.2)")mesh%X
 
-  call residual(nndof, mesh%A, mesh%B, mesh%X)
+  call residual(3*mesh%nnode, mesh%A, mesh%B, mesh%X)
 end subroutine solver
 
 subroutine LU(nndof, Ain, B, X)
@@ -94,7 +88,7 @@ subroutine residual(nndof, A, B, X)
   enddo
   res = dsqrt(res)
 
-  write(*,"(a, 1pe12.5)")"** residual: ", res
+  write(*,"(a, 1pe12.5)")"  ** solver residual: ", res
 
   deallocate(Y)
 end subroutine residual

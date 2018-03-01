@@ -3,18 +3,11 @@ subroutine stiff_matrix(mesh)
   use util
   implicit none
   type(meshdef) :: mesh
-  integer(kint) :: i, in, j, n, ndof, nndof
+  integer(kint) :: i, in, j
   integer(kint) :: icel
   integer(kint) :: elem(8)
   real(kdouble) :: node(3,8)
   real(kdouble) :: stiff(24,24)
-
-  mesh%ndof = 3
-  n    = mesh%nnode
-  ndof = mesh%ndof
-  nndof= n*ndof
-  allocate(mesh%A(nndof,nndof))
-  mesh%A = 0.0d0
 
   do icel=1,mesh%nelem
     do i=1,8
@@ -27,14 +20,13 @@ subroutine stiff_matrix(mesh)
     call C3D8_stiff(mesh, node, stiff)
     call merge(mesh, elem, stiff)
   enddo
-
 end subroutine stiff_matrix
 
 subroutine merge(mesh, elem, stiff)
   use util
   implicit none
   type(meshdef) :: mesh
-  integer(kint) :: i, in, j, jn, n, ndof
+  integer(kint) :: i, in, j, jn, n
   integer(kint) :: elem(8)
   real(kdouble) :: stiff(24,24)
 
@@ -55,39 +47,45 @@ subroutine merge(mesh, elem, stiff)
   enddo
 end subroutine merge
 
-subroutine bound_condition(mesh)
+subroutine load_condition(mesh)
   use util
   implicit none
   type(meshdef) :: mesh
-  integer(kint) :: i, in, dof, j, jn, n, ndof, nndof
+  integer(kint) :: i, in, dof, j, jn
   real(kdouble) :: val
-
-  n    = mesh%nnode
-  ndof = mesh%ndof
-  nndof= n*ndof
-  allocate(mesh%B(n*ndof))
-  mesh%B = 0.0d0
-
-  !boundary
-  do i=1,mesh%nbound
-    in  = mesh%ibound(1, i)
-    dof = mesh%ibound(2, i)
-    !val = mesh%bound(i)
-    !mesh%B(3*in-3+dof) = val
-    jn  = 3*in-3+dof
-    do j=1,nndof
-      mesh%A(jn, j) = 0.0d0
-      mesh%A(j, jn) = 0.0d0
-    enddo
-    mesh%A(jn, jn) = 1.0d0
-  enddo
 
   !cload
   do i=1,mesh%ncload
     in  = mesh%icload(1, i)
     dof = mesh%icload(2, i)
     val = mesh%cload(i)
-    mesh%B(3*in-3+dof) = val
+    if(3 < dof) stop "*** error: 3 < dof"
+    mesh%f(3*in-3+dof) = val
+  enddo
+end subroutine load_condition
+
+subroutine bound_condition(mesh)
+  use util
+  implicit none
+  type(meshdef) :: mesh
+  integer(kint) :: i, in, dof, j, jn
+  real(kdouble) :: val
+
+  !boundary
+  do i=1,mesh%nbound
+    in  = mesh%ibound(1, i)
+    dof = mesh%ibound(2, i)
+    if(3 < dof) stop "*** error: 3 < dof"
+    !val = mesh%bound(i)
+    !mesh%B(3*in-3+dof) = val
+    jn  = 3*in-3+dof
+    do j=1,3*mesh%nnode
+      mesh%A(jn, j) = 0.0d0
+      mesh%A(j, jn) = 0.0d0
+    enddo
+    mesh%A(jn, jn) = 1.0d0
+
+    mesh%B(jn) = 0.0d0
   enddo
 end subroutine bound_condition
 
@@ -100,6 +98,7 @@ subroutine stress_update(mesh)
   real(kdouble) :: func(8,8), inv(8,8)
   real(kdouble) :: nstrain(8,6), nstress(8,6)
   real(kdouble) :: estrain(6),   estress(6)
+  real(kdouble) :: q_elem(24)
   integer(kint), allocatable :: inode(:)
 
   allocate(inode(mesh%nnode))
@@ -114,14 +113,14 @@ subroutine stress_update(mesh)
   do icel=1,mesh%nelem
     do i=1,8
       in = mesh%elem(i,icel)
-      u(1,i) = mesh%X(3*in-2)
-      u(2,i) = mesh%X(3*in-1)
-      u(3,i) = mesh%X(3*in  )
+      u(1,i) = mesh%u(3*i-2) + mesh%du(3*i-2) + mesh%X(3*in-2)
+      u(2,i) = mesh%u(3*i-1) + mesh%du(3*i-1) + mesh%X(3*in-1)
+      u(3,i) = mesh%u(3*i  ) + mesh%du(3*i  ) + mesh%X(3*in  )
       node(1,i) = mesh%node(1,in)
       node(2,i) = mesh%node(2,in)
       node(3,i) = mesh%node(3,in)
     enddo
-    call C3D8_update(mesh, icel, node, u)
+    call C3D8_update(mesh, icel, node, u, q_elem)
     call C3D8_get_nodal_values(mesh, icel, inv, nstrain, nstress, estrain, estress)
 
     do i=1,8
@@ -131,6 +130,9 @@ subroutine stress_update(mesh)
         mesh%nstrain(j,in) = mesh%nstrain(j,in) + estrain(j)
         mesh%nstress(j,in) = mesh%nstress(j,in) + estress(j)
       enddo
+      mesh%q(3*in-2) = q_elem(3*i-2)
+      mesh%q(3*in-1) = q_elem(3*i-1)
+      mesh%q(3*in  ) = q_elem(3*i  )
     enddo
 
     do j=1,6

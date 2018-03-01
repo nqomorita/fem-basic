@@ -16,7 +16,7 @@ subroutine C3D8_stiff(mesh, node, stiff)
   do i=1,8
     call C3D8_integral_point(i, r)
     call C3D8_get_global_deriv(node, r, dndx, det)
-    call C3D8_Bmat(node, B, dndx)
+    call C3D8_Bmat(node, dndx, B)
     call C3D8_Dmat(mesh, D)
     call C3D8_Kmat(mesh, stress, D, B, wg, det, stiff)
   enddo
@@ -133,7 +133,7 @@ subroutine C3D8_get_global_deriv(node, r, dndx, det)
 
 end subroutine C3D8_get_global_deriv
 
-subroutine C3D8_Bmat(node, B, dndx)
+subroutine C3D8_Bmat(node, dndx, B)
   use util
   implicit none
   type(meshdef) :: mesh
@@ -256,19 +256,22 @@ subroutine C3D8_Kmat(mesh, stress, D, B, wg, det, stiff)
   !endif
 end subroutine C3D8_Kmat
 
-subroutine C3D8_update(mesh, icel, node, u)
+subroutine C3D8_update(mesh, icel, node, u, q)
   use util
   implicit none
   type(meshdef) :: mesh
   integer(kint) :: i, j, icel
-  real(kdouble) :: node(3,8), u(3,8), r(3), deriv(8,3), xj(3,3), D(6,6)
-  real(kdouble) :: strain(6), stress(6), det
+  real(kdouble) :: node(3,8), u(3,8), r(3), dndx(8,3), xj(3,3), D(6,6), B(6,24)
+  real(kdouble) :: strain(6), stress(6), q(24), det
+
+  q = 0.0d0
 
   do i=1,8
     call C3D8_integral_point(i, r)
-    call C3D8_get_global_deriv(node, r, deriv, det)
+    call C3D8_get_global_deriv(node, r, dndx, det)
+    call C3D8_Bmat(node, dndx, B)
     call C3D8_Dmat(mesh, D)
-    xj = matmul(u, deriv)
+    xj = matmul(u, dndx)
     strain(1) = xj(1,1)
     strain(2) = xj(2,2)
     strain(3) = xj(3,3)
@@ -278,6 +281,7 @@ subroutine C3D8_update(mesh, icel, node, u)
     stress = matmul(D, strain)
     mesh%gauss(i,icel)%strain = strain
     mesh%gauss(i,icel)%stress = stress
+    q = q + matmul(stress, B) * det
   enddo
 end subroutine C3D8_update
 

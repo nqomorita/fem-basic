@@ -54,12 +54,26 @@ subroutine init_mesh(mesh)
   allocate(mesh%estrain(6, mesh%nelem))
   allocate(mesh%estress(6, mesh%nelem))
   allocate(mesh%emises (mesh%nelem))
+  allocate(mesh%u (3*mesh%nnode))
+  allocate(mesh%du(3*mesh%nnode))
+  allocate(mesh%q (3*mesh%nnode))
+  allocate(mesh%f (3*mesh%nnode))
+  allocate(mesh%A (3*mesh%nnode, 3*mesh%nnode))
+  allocate(mesh%x (3*mesh%nnode))
+  allocate(mesh%b (3*mesh%nnode))
   mesh%nstrain = 0.0d0
   mesh%nstress = 0.0d0
   mesh%nmises  = 0.0d0
   mesh%estrain = 0.0d0
   mesh%estress = 0.0d0
   mesh%emises  = 0.0d0
+  mesh%u       = 0.0d0
+  mesh%du      = 0.0d0
+  mesh%q       = 0.0d0
+  mesh%f       = 0.0d0
+  mesh%A       = 0.0d0
+  mesh%x       = 0.0d0
+  mesh%b       = 0.0d0
 end subroutine init_mesh
 
 subroutine outout_res(mesh)
@@ -86,7 +100,7 @@ subroutine outout_res(mesh)
     write(10,"(a)")"stress, MPa"
     write(10,"(a)")"mises, MPa"
     do i=1,mesh%nnode
-      write(10,"(i8, 1p16e12.4)")i, mesh%X(3*i-2), mesh%X(3*i-1), mesh%X(3*i), &
+      write(10,"(i8, 1p16e12.4)")i, mesh%u(3*i-2), mesh%u(3*i-1), mesh%u(3*i), &
       & mesh%nstrain(1,i), mesh%nstrain(2,i), mesh%nstrain(3,i), mesh%nstrain(4,i), mesh%nstrain(5,i), mesh%nstrain(6,i), &
       & mesh%nstress(1,i), mesh%nstress(2,i), mesh%nstress(3,i), mesh%nstress(4,i), mesh%nstress(5,i), mesh%nstress(6,i), &
       & mesh%nmises(i)

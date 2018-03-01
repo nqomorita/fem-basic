@@ -10,13 +10,34 @@ module util
   end type gaussdef
 
   type meshdef
+    !integer(kint) :: ndof
+    integer(kint) :: cur_tstep
+    integer(kint) :: cur_nrstep
+
     integer(kint) :: nnode
+    real(kdouble), pointer :: node(:,:)
+
     integer(kint) :: nelem
-    integer(kint) :: ndof
-    integer(kint) :: nbound, ncload
     integer(kint), pointer :: elem(:,:)
+
+    integer(kint) :: nbound
     integer(kint), pointer :: ibound(:,:)
+    real(kdouble), pointer :: bound(:)
+
+    integer(kint) :: ncload
     integer(kint), pointer :: icload(:,:)
+    real(kdouble), pointer :: cload(:)
+
+    real(kdouble) :: E, mu, rho
+
+    real(kdouble), pointer :: u(:)
+    real(kdouble), pointer :: du(:)
+    real(kdouble), pointer :: q(:)
+    real(kdouble), pointer :: f(:)
+
+    real(kdouble), pointer :: A(:,:)
+    real(kdouble), pointer :: B(:)
+    real(kdouble), pointer :: X(:)
 
     type(gaussdef), pointer :: gauss(:,:)
     real(kdouble), pointer :: nstrain(:,:)
@@ -25,14 +46,6 @@ module util
     real(kdouble), pointer :: estrain(:,:)
     real(kdouble), pointer :: estress(:,:)
     real(kdouble), pointer :: emises(:)
-
-    real(kdouble), pointer :: A(:,:)
-    real(kdouble), pointer :: B(:)
-    real(kdouble), pointer :: X(:)
-    real(kdouble), pointer :: node(:,:)
-    real(kdouble), pointer :: bound(:)
-    real(kdouble), pointer :: cload(:)
-    real(kdouble) :: E, mu, rho
   end type meshdef
 end module util
 
@@ -43,6 +56,13 @@ program main
 
   call input_mesh(mesh)
   call init_mesh(mesh)
-  call static(mesh)
+
+  if(isNLGeom)then
+    call nonlinear_static(mesh)
+  else
+    call nonlinear_static(mesh)
+    !call static(mesh)
+  endif
+
   call outout_res(mesh)
 end program main
