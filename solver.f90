@@ -3,7 +3,6 @@ subroutine solver(mesh)
   use util
   implicit none
   type(meshdef) :: mesh
-  integer(kint) :: i, n
 
   call LU(3*mesh%nnode, mesh%A, mesh%B, mesh%X)
   call residual(3*mesh%nnode, mesh%A, mesh%B, mesh%X)
@@ -59,7 +58,7 @@ end subroutine LU
 subroutine residual(nndof, A, B, X)
   use util
   implicit none
-  integer(kint) :: i, j, k, nndof
+  integer(kint) :: i, j, nndof
   real(kdouble) :: A(nndof, nndof), B(nndof), X(nndof), res, tmp
   real(kdouble), allocatable :: Y(:)
 

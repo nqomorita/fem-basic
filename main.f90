@@ -10,7 +10,6 @@ module util
   end type gaussdef
 
   type meshdef
-    !integer(kint) :: ndof
     integer(kint) :: cur_tstep
     integer(kint) :: cur_nrstep
 
@@ -60,8 +59,7 @@ program main
   if(isNLGeom)then
     call nonlinear_static(mesh)
   else
-    call nonlinear_static(mesh)
-    !call static(mesh)
+    call static(mesh)
   endif
 
   call outout_res(mesh)

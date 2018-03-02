@@ -26,7 +26,7 @@ subroutine nonlinear_static(mesh)
   mesh%du = 0.0d0
   mesh%cur_tstep = 1
 
-  do NRiter=1,2
+  do NRiter=1,5
     mesh%cur_nrstep = NRiter
     write(*,"(a)")""
     write(*,"(a,i8)")"** NRiter:", NRiter

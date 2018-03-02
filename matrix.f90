@@ -17,7 +17,7 @@ subroutine stiff_matrix(mesh)
       node(2,i) = mesh%node(2,in)
       node(3,i) = mesh%node(3,in)
     enddo
-    call C3D8_stiff(mesh, node, stiff)
+    call C3D8_stiff(mesh, icel, node, stiff)
     call merge(mesh, elem, stiff)
   enddo
 end subroutine stiff_matrix
@@ -26,7 +26,7 @@ subroutine merge(mesh, elem, stiff)
   use util
   implicit none
   type(meshdef) :: mesh
-  integer(kint) :: i, in, j, jn, n
+  integer(kint) :: i, in, j, jn
   integer(kint) :: elem(8)
   real(kdouble) :: stiff(24,24)
 
@@ -51,7 +51,7 @@ subroutine load_condition(mesh)
   use util
   implicit none
   type(meshdef) :: mesh
-  integer(kint) :: i, in, dof, j, jn
+  integer(kint) :: i, in, dof
   real(kdouble) :: val
 
   !cload

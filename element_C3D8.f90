@@ -1,14 +1,13 @@
 
-subroutine C3D8_stiff(mesh, node, stiff)
+subroutine C3D8_stiff(mesh, icel, node, stiff)
   use util
   implicit none
   type(meshdef) :: mesh
-  integer(kint) :: i, n, ndof
+  integer(kint) :: i, icel
   integer(kint) :: ir1, ir2, ir3
   real(kdouble) :: node(3,8), stiff(24,24)
   real(kdouble) :: r(3), wg, det
   real(kdouble) :: B(6,24), D(6,6), dndx(8,3)
-  real(kdouble) :: stress(6)
 
   wg     = 1.0d0
   stiff  = 0.0d0
@@ -18,7 +17,7 @@ subroutine C3D8_stiff(mesh, node, stiff)
     call C3D8_get_global_deriv(node, r, dndx, det)
     call C3D8_Bmat(node, dndx, B)
     call C3D8_Dmat(mesh, D)
-    call C3D8_Kmat(mesh, stress, D, B, wg, det, stiff)
+    call C3D8_Kmat(mesh, icel, i, dndx, D, B, wg, det, stiff)
   enddo
 
 end subroutine C3D8_stiff
@@ -211,49 +210,60 @@ subroutine C3D8_Dmat(mesh, D)
   D(6,6) = g/(2.0d0-mu)
 end subroutine C3D8_Dmat
 
-subroutine C3D8_Kmat(mesh, stress, D, B, wg, det, stiff)
+subroutine C3D8_Kmat(mesh, icel, igsp, dndx, D, B, wg, det, stiff)
   use util
   implicit none
   type(meshdef) :: mesh
-  integer(kint) :: i, j
+  integer(kint) :: i, j, k, igsp, icel
   real(kdouble) :: stiff(24,24), D(6,6), B(6,24), DB(6,24), wg, det
-  real(kdouble) :: stress(6), S(9,9), BN(9,24), SBN(9,24)
+  real(kdouble) :: stress(6), S(9,9), BN(9,24), SBN(9,24), dndx(8,3)
 
   DB = matmul(D, B)
-  forall(i=1:24, j=1:24)
-    stiff(i,j) = stiff(i,j) + DOT_PRODUCT(B(:,i), DB(:,j)) * wg * det
-  end forall
+  do i=1,24
+    do j=1,24
+      do k=1,6
+        stiff(j,i) = stiff(j,i) + B(k,j) * DB(k,i) * wg * det
+      enddo
+    enddo
+  enddo
 
-  !if(isNLGeom)then
-  !  stress(1:6) = gausses(LX)%stress
-  !  do j = 1, nn+3
-  !    BN(1, 3*j-2) = gderiv(j, 1)
-  !    BN(2, 3*j-1) = gderiv(j, 1)
-  !    BN(3, 3*j  ) = gderiv(j, 1)
-  !    BN(4, 3*j-2) = gderiv(j, 2)
-  !    BN(5, 3*j-1) = gderiv(j, 2)
-  !    BN(6, 3*j  ) = gderiv(j, 2)
-  !    BN(7, 3*j-2) = gderiv(j, 3)
-  !    BN(8, 3*j-1) = gderiv(j, 3)
-  !    BN(9, 3*j  ) = gderiv(j, 3)
-  !  end do
-  !  Smat(:, :) = 0.0D0
-  !  do j = 1, 3
-  !    Smat(j  , j  ) = stress(1)
-  !    Smat(j  , j+3) = stress(4)
-  !    Smat(j  , j+6) = stress(6)
-  !    Smat(j+3, j  ) = stress(4)
-  !    Smat(j+3, j+3) = stress(2)
-  !    Smat(j+3, j+6) = stress(5)
-  !    Smat(j+6, j  ) = stress(6)
-  !    Smat(j+6, j+3) = stress(5)
-  !    Smat(j+6, j+6) = stress(3)
-  !  end do
-  !  SBN(1:9, 1:(nn+3)*ndof) = matmul( Smat(1:9, 1:9), BN(1:9, 1:(nn+3)*ndof) )
-  !  forall( i=1:(nn+3)*ndof, j=1:(nn+3)*ndof )
-  !    tmpstiff(i, j) = tmpstiff(i, j)+dot_product( BN(:, i), SBN(:, j) )*wg
-  !  end forall
-  !endif
+  if(isNLGeom)then
+    stress = mesh%gauss(igsp, icel)%stress
+    do j=1, 8
+      !BN(1, 3*j-2) = gderiv(j, 1)
+      !BN(2, 3*j-1) = gderiv(j, 1)
+      !BN(3, 3*j  ) = gderiv(j, 1)
+      !BN(4, 3*j-2) = gderiv(j, 2)
+      !BN(5, 3*j-1) = gderiv(j, 2)
+      !BN(6, 3*j  ) = gderiv(j, 2)
+      !BN(7, 3*j-2) = gderiv(j, 3)
+      !BN(8, 3*j-1) = gderiv(j, 3)
+      !BN(9, 3*j  ) = gderiv(j, 3)
+    enddo
+    S = 0.0d0
+    do j = 1, 3
+      S(j  , j  ) = stress(1)
+      S(j  , j+3) = stress(4)
+      S(j  , j+6) = stress(6)
+      S(j+3, j  ) = stress(4)
+      S(j+3, j+3) = stress(2)
+      S(j+3, j+6) = stress(5)
+      S(j+6, j  ) = stress(6)
+      S(j+6, j+3) = stress(5)
+      S(j+6, j+6) = stress(3)
+    enddo
+    SBN = matmul(S, BN)
+    !forall( i=1:(nn+3)*ndof, j=1:(nn+3)*ndof )
+    !  tmpstiff(i, j) = tmpstiff(i, j)+dot_product( BN(:, i), SBN(:, j) )*wg
+    !end forall
+    do i=1,24
+      do j=1,24
+        do k=1,6
+          stiff(j,i) = stiff(j,i) + B(k,j) * DB(k,i) * wg
+        enddo
+      enddo
+    enddo
+  endif
 end subroutine C3D8_Kmat
 
 subroutine C3D8_update(mesh, icel, node, u, q)
