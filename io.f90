@@ -118,3 +118,25 @@ subroutine outout_res(mesh)
     enddo
   close(10)
 end subroutine outout_res
+
+subroutine finalize_mesh(mesh)
+  use util
+  implicit none
+  type(meshdef) :: mesh
+
+  deallocate(mesh%gauss)
+  deallocate(mesh%nstrain)
+  deallocate(mesh%nstress)
+  deallocate(mesh%nmises)
+  deallocate(mesh%estrain)
+  deallocate(mesh%estress)
+  deallocate(mesh%emises)
+  deallocate(mesh%u)
+  deallocate(mesh%du)
+  deallocate(mesh%q)
+  deallocate(mesh%f)
+  deallocate(mesh%A)
+  deallocate(mesh%x)
+  deallocate(mesh%b)
+end subroutine finalize_mesh
+

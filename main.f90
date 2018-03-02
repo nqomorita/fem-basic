@@ -63,4 +63,5 @@ program main
   endif
 
   call outout_res(mesh)
+  call finalize_mesh(mesh)
 end program main

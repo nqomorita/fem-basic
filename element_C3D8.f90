@@ -47,14 +47,14 @@ subroutine C3D8_shapefunc(local, func)
   implicit none
   real(kdouble) ::  local(3), func(8)
 
-  func(1) = 0.125d0*(1.d0-local(1))*(1.d0-local(2))*(1.d0-local(3))
-  func(2) = 0.125d0*(1.d0+local(1))*(1.d0-local(2))*(1.d0-local(3))
-  func(3) = 0.125d0*(1.d0+local(1))*(1.d0+local(2))*(1.d0-local(3))
-  func(4) = 0.125d0*(1.d0-local(1))*(1.d0+local(2))*(1.d0-local(3))
-  func(5) = 0.125d0*(1.d0-local(1))*(1.d0-local(2))*(1.d0+local(3))
-  func(6) = 0.125d0*(1.d0+local(1))*(1.d0-local(2))*(1.d0+local(3))
-  func(7) = 0.125d0*(1.d0+local(1))*(1.d0+local(2))*(1.d0+local(3))
-  func(8) = 0.125d0*(1.d0-local(1))*(1.d0+local(2))*(1.d0+local(3))
+  func(1) = 0.125d0*(1.0d0-local(1))*(1.0d0-local(2))*(1.0d0-local(3))
+  func(2) = 0.125d0*(1.0d0+local(1))*(1.0d0-local(2))*(1.0d0-local(3))
+  func(3) = 0.125d0*(1.0d0+local(1))*(1.0d0+local(2))*(1.0d0-local(3))
+  func(4) = 0.125d0*(1.0d0-local(1))*(1.0d0+local(2))*(1.0d0-local(3))
+  func(5) = 0.125d0*(1.0d0-local(1))*(1.0d0-local(2))*(1.0d0+local(3))
+  func(6) = 0.125d0*(1.0d0+local(1))*(1.0d0-local(2))*(1.0d0+local(3))
+  func(7) = 0.125d0*(1.0d0+local(1))*(1.0d0+local(2))*(1.0d0+local(3))
+  func(8) = 0.125d0*(1.0d0-local(1))*(1.0d0+local(2))*(1.0d0+local(3))
 end subroutine C3D8_shapefunc
 
 subroutine C3D8_shapefunc_deriv(local, func)
@@ -62,32 +62,32 @@ subroutine C3D8_shapefunc_deriv(local, func)
   implicit none
   real(kdouble) :: local(3), func(8,3)
 
-  func(1,1) = -0.125d0*(1.d0-local(2))*(1.d0-local(3))
-  func(2,1) =  0.125d0*(1.d0-local(2))*(1.d0-local(3))
-  func(3,1) =  0.125d0*(1.d0+local(2))*(1.d0-local(3))
-  func(4,1) = -0.125d0*(1.d0+local(2))*(1.d0-local(3))
-  func(5,1) = -0.125d0*(1.d0-local(2))*(1.d0+local(3))
-  func(6,1) =  0.125d0*(1.d0-local(2))*(1.d0+local(3))
-  func(7,1) =  0.125d0*(1.d0+local(2))*(1.d0+local(3))
-  func(8,1) = -0.125d0*(1.d0+local(2))*(1.d0+local(3))
+  func(1,1) = -0.125d0*(1.0d0-local(2))*(1.0d0-local(3))
+  func(2,1) =  0.125d0*(1.0d0-local(2))*(1.0d0-local(3))
+  func(3,1) =  0.125d0*(1.0d0+local(2))*(1.0d0-local(3))
+  func(4,1) = -0.125d0*(1.0d0+local(2))*(1.0d0-local(3))
+  func(5,1) = -0.125d0*(1.0d0-local(2))*(1.0d0+local(3))
+  func(6,1) =  0.125d0*(1.0d0-local(2))*(1.0d0+local(3))
+  func(7,1) =  0.125d0*(1.0d0+local(2))*(1.0d0+local(3))
+  func(8,1) = -0.125d0*(1.0d0+local(2))*(1.0d0+local(3))
 
-  func(1,2) = -0.125d0*(1.d0-local(1))*(1.d0-local(3))
-  func(2,2) = -0.125d0*(1.d0+local(1))*(1.d0-local(3))
-  func(3,2) =  0.125d0*(1.d0+local(1))*(1.d0-local(3))
-  func(4,2) =  0.125d0*(1.d0-local(1))*(1.d0-local(3))
-  func(5,2) = -0.125d0*(1.d0-local(1))*(1.d0+local(3))
-  func(6,2) = -0.125d0*(1.d0+local(1))*(1.d0+local(3))
-  func(7,2) =  0.125d0*(1.d0+local(1))*(1.d0+local(3))
-  func(8,2) =  0.125d0*(1.d0-local(1))*(1.d0+local(3))
+  func(1,2) = -0.125d0*(1.0d0-local(1))*(1.0d0-local(3))
+  func(2,2) = -0.125d0*(1.0d0+local(1))*(1.0d0-local(3))
+  func(3,2) =  0.125d0*(1.0d0+local(1))*(1.0d0-local(3))
+  func(4,2) =  0.125d0*(1.0d0-local(1))*(1.0d0-local(3))
+  func(5,2) = -0.125d0*(1.0d0-local(1))*(1.0d0+local(3))
+  func(6,2) = -0.125d0*(1.0d0+local(1))*(1.0d0+local(3))
+  func(7,2) =  0.125d0*(1.0d0+local(1))*(1.0d0+local(3))
+  func(8,2) =  0.125d0*(1.0d0-local(1))*(1.0d0+local(3))
 
-  func(1,3) = -0.125d0*(1.d0-local(1))*(1.d0-local(2))
-  func(2,3) = -0.125d0*(1.d0+local(1))*(1.d0-local(2))
-  func(3,3) = -0.125d0*(1.d0+local(1))*(1.d0+local(2))
-  func(4,3) = -0.125d0*(1.d0-local(1))*(1.d0+local(2))
-  func(5,3) =  0.125d0*(1.d0-local(1))*(1.d0-local(2))
-  func(6,3) =  0.125d0*(1.d0+local(1))*(1.d0-local(2))
-  func(7,3) =  0.125d0*(1.d0+local(1))*(1.d0+local(2))
-  func(8,3) =  0.125d0*(1.d0-local(1))*(1.d0+local(2))
+  func(1,3) = -0.125d0*(1.0d0-local(1))*(1.0d0-local(2))
+  func(2,3) = -0.125d0*(1.0d0+local(1))*(1.0d0-local(2))
+  func(3,3) = -0.125d0*(1.0d0+local(1))*(1.0d0+local(2))
+  func(4,3) = -0.125d0*(1.0d0-local(1))*(1.0d0+local(2))
+  func(5,3) =  0.125d0*(1.0d0-local(1))*(1.0d0-local(2))
+  func(6,3) =  0.125d0*(1.0d0+local(1))*(1.0d0-local(2))
+  func(7,3) =  0.125d0*(1.0d0+local(1))*(1.0d0+local(2))
+  func(8,3) =  0.125d0*(1.0d0-local(1))*(1.0d0+local(2))
 end subroutine C3D8_shapefunc_deriv
 
 subroutine C3D8_get_inverse_matrix(xj, inv, det)
@@ -122,14 +122,10 @@ subroutine C3D8_get_global_deriv(node, r, dndx, det)
   real(kdouble) :: node(3,8), r(3), dndx(8,3), deriv(8,3)
   real(kdouble) :: xj(3,3), inv(3,3), det, detinv
 
-!write(*,*)"node"
-!write(*,"(3e12.5)")node
-
   call C3D8_shapefunc_deriv(r, deriv)
   xj = matmul( node, deriv )
   call C3D8_get_inverse_matrix(xj, inv, det)
   dndx = matmul( deriv, inv )
-
 end subroutine C3D8_get_global_deriv
 
 subroutine C3D8_Bmat(node, dndx, B)
@@ -230,15 +226,15 @@ subroutine C3D8_Kmat(mesh, icel, igsp, dndx, D, B, wg, det, stiff)
   if(isNLGeom)then
     stress = mesh%gauss(igsp, icel)%stress
     do j=1, 8
-      !BN(1, 3*j-2) = gderiv(j, 1)
-      !BN(2, 3*j-1) = gderiv(j, 1)
-      !BN(3, 3*j  ) = gderiv(j, 1)
-      !BN(4, 3*j-2) = gderiv(j, 2)
-      !BN(5, 3*j-1) = gderiv(j, 2)
-      !BN(6, 3*j  ) = gderiv(j, 2)
-      !BN(7, 3*j-2) = gderiv(j, 3)
-      !BN(8, 3*j-1) = gderiv(j, 3)
-      !BN(9, 3*j  ) = gderiv(j, 3)
+      BN(1, 3*j-2) = dndx(j, 1)
+      BN(2, 3*j-1) = dndx(j, 1)
+      BN(3, 3*j  ) = dndx(j, 1)
+      BN(4, 3*j-2) = dndx(j, 2)
+      BN(5, 3*j-1) = dndx(j, 2)
+      BN(6, 3*j  ) = dndx(j, 2)
+      BN(7, 3*j-2) = dndx(j, 3)
+      BN(8, 3*j-1) = dndx(j, 3)
+      BN(9, 3*j  ) = dndx(j, 3)
     enddo
     S = 0.0d0
     do j = 1, 3
@@ -253,13 +249,10 @@ subroutine C3D8_Kmat(mesh, icel, igsp, dndx, D, B, wg, det, stiff)
       S(j+6, j+6) = stress(3)
     enddo
     SBN = matmul(S, BN)
-    !forall( i=1:(nn+3)*ndof, j=1:(nn+3)*ndof )
-    !  tmpstiff(i, j) = tmpstiff(i, j)+dot_product( BN(:, i), SBN(:, j) )*wg
-    !end forall
     do i=1,24
       do j=1,24
-        do k=1,6
-          stiff(j,i) = stiff(j,i) + B(k,j) * DB(k,i) * wg
+        do k=1,9
+          stiff(j,i) = stiff(j,i) + BN(k,j) * SBN(k,i) * wg
         enddo
       enddo
     enddo
@@ -295,7 +288,7 @@ subroutine C3D8_update(mesh, icel, node, u, q)
   enddo
 end subroutine C3D8_update
 
-subroutine  C3D8_get_nodal_values(mesh, icel, inv, nstrain, nstress, estrain, estress)
+subroutine C3D8_get_nodal_values(mesh, icel, inv, nstrain, nstress, estrain, estress)
   use util
   implicit none
   type(meshdef) :: mesh
@@ -326,6 +319,4 @@ subroutine  C3D8_get_nodal_values(mesh, icel, inv, nstrain, nstress, estrain, es
   enddo
   estrain = estrain/8.0d0
   estress = estress/8.0d0
-
 end subroutine C3D8_get_nodal_values
-
