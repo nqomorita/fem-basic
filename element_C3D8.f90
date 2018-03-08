@@ -1,11 +1,12 @@
 
-subroutine C3D8_stiff(mesh, icel, node, stiff)
+subroutine C3D8_stiff(mesh, icel, elem, stiff)
   use util
   implicit none
   type(meshdef) :: mesh
-  integer(kint) :: i, icel
+  integer(kint) :: i, in, icel
   integer(kint) :: ir1, ir2, ir3
-  real(kdouble) :: node(3,8), stiff(24,24)
+  integer(kint) :: elem(8)
+  real(kdouble) :: x0(3,8), x1(3,8), stiff(24,24)
   real(kdouble) :: r(3), wg, det
   real(kdouble) :: B(6,24), D(6,6), dndx(8,3)
 
@@ -13,82 +14,25 @@ subroutine C3D8_stiff(mesh, icel, node, stiff)
   stiff  = 0.0d0
 
   do i=1,8
+    in = elem(i)
+    x0(1,i) = mesh%node(1,in)
+    x0(2,i) = mesh%node(2,in)
+    x0(3,i) = mesh%node(3,in)
+    x1(1,i) = mesh%node(1,in) + mesh%u(3*i-2) + mesh%du(3*i-2)
+    x1(2,i) = mesh%node(2,in) + mesh%u(3*i-1) + mesh%du(3*i-1)
+    x1(3,i) = mesh%node(3,in) + mesh%u(3*i  ) + mesh%du(3*i  )
+  enddo
+
+  do i=1,8
     call C3D8_integral_point(i, r)
-    call C3D8_get_global_deriv(node, r, dndx, det)
-    call C3D8_Bmat(node, dndx, B)
+    call C3D8_get_global_deriv(x0, r, dndx, det)
+    call C3D8_Bmat(x1, dndx, B)
     call C3D8_Dmat(mesh, D)
-    call C3D8_Kmat(mesh, icel, i, dndx, D, B, wg, det, stiff)
+    call C3D8_Kmat(mesh, mesh%gauss(i,icel)%stress, dndx, D, B, wg, det, stiff)
+!if(i==1) write(*,"(1p3e12.5)")stiff
   enddo
 
 end subroutine C3D8_stiff
-
-subroutine C3D8_integral_point(i, r)
-  use util
-  implicit none
-  integer(kint) :: i
-  real(kdouble) :: gsp(3,8), r(3)
-
-  gsp(1,1) = -0.577350269189626d0; gsp(2,1) = -0.577350269189626d0; gsp(3,1) = -0.577350269189626d0
-  gsp(1,2) =  0.577350269189626d0; gsp(2,2) = -0.577350269189626d0; gsp(3,2) = -0.577350269189626d0
-  gsp(1,3) = -0.577350269189626d0; gsp(2,3) =  0.577350269189626d0; gsp(3,3) = -0.577350269189626d0
-  gsp(1,4) =  0.577350269189626d0; gsp(2,4) =  0.577350269189626d0; gsp(3,4) = -0.577350269189626d0
-  gsp(1,5) = -0.577350269189626d0; gsp(2,5) = -0.577350269189626d0; gsp(3,5) =  0.577350269189626d0
-  gsp(1,6) =  0.577350269189626d0; gsp(2,6) = -0.577350269189626d0; gsp(3,6) =  0.577350269189626d0
-  gsp(1,7) = -0.577350269189626d0; gsp(2,7) =  0.577350269189626d0; gsp(3,7) =  0.577350269189626d0
-  gsp(1,8) =  0.577350269189626d0; gsp(2,8) =  0.577350269189626d0; gsp(3,8) =  0.577350269189626d0
-
-  r(1) = gsp(1,i)
-  r(2) = gsp(2,i)
-  r(3) = gsp(3,i)
-end subroutine C3D8_integral_point
-
-subroutine C3D8_shapefunc(local, func)
-  use util
-  implicit none
-  real(kdouble) ::  local(3), func(8)
-
-  func(1) = 0.125d0*(1.0d0-local(1))*(1.0d0-local(2))*(1.0d0-local(3))
-  func(2) = 0.125d0*(1.0d0+local(1))*(1.0d0-local(2))*(1.0d0-local(3))
-  func(3) = 0.125d0*(1.0d0+local(1))*(1.0d0+local(2))*(1.0d0-local(3))
-  func(4) = 0.125d0*(1.0d0-local(1))*(1.0d0+local(2))*(1.0d0-local(3))
-  func(5) = 0.125d0*(1.0d0-local(1))*(1.0d0-local(2))*(1.0d0+local(3))
-  func(6) = 0.125d0*(1.0d0+local(1))*(1.0d0-local(2))*(1.0d0+local(3))
-  func(7) = 0.125d0*(1.0d0+local(1))*(1.0d0+local(2))*(1.0d0+local(3))
-  func(8) = 0.125d0*(1.0d0-local(1))*(1.0d0+local(2))*(1.0d0+local(3))
-end subroutine C3D8_shapefunc
-
-subroutine C3D8_shapefunc_deriv(local, func)
-  use util
-  implicit none
-  real(kdouble) :: local(3), func(8,3)
-
-  func(1,1) = -0.125d0*(1.0d0-local(2))*(1.0d0-local(3))
-  func(2,1) =  0.125d0*(1.0d0-local(2))*(1.0d0-local(3))
-  func(3,1) =  0.125d0*(1.0d0+local(2))*(1.0d0-local(3))
-  func(4,1) = -0.125d0*(1.0d0+local(2))*(1.0d0-local(3))
-  func(5,1) = -0.125d0*(1.0d0-local(2))*(1.0d0+local(3))
-  func(6,1) =  0.125d0*(1.0d0-local(2))*(1.0d0+local(3))
-  func(7,1) =  0.125d0*(1.0d0+local(2))*(1.0d0+local(3))
-  func(8,1) = -0.125d0*(1.0d0+local(2))*(1.0d0+local(3))
-
-  func(1,2) = -0.125d0*(1.0d0-local(1))*(1.0d0-local(3))
-  func(2,2) = -0.125d0*(1.0d0+local(1))*(1.0d0-local(3))
-  func(3,2) =  0.125d0*(1.0d0+local(1))*(1.0d0-local(3))
-  func(4,2) =  0.125d0*(1.0d0-local(1))*(1.0d0-local(3))
-  func(5,2) = -0.125d0*(1.0d0-local(1))*(1.0d0+local(3))
-  func(6,2) = -0.125d0*(1.0d0+local(1))*(1.0d0+local(3))
-  func(7,2) =  0.125d0*(1.0d0+local(1))*(1.0d0+local(3))
-  func(8,2) =  0.125d0*(1.0d0-local(1))*(1.0d0+local(3))
-
-  func(1,3) = -0.125d0*(1.0d0-local(1))*(1.0d0-local(2))
-  func(2,3) = -0.125d0*(1.0d0+local(1))*(1.0d0-local(2))
-  func(3,3) = -0.125d0*(1.0d0+local(1))*(1.0d0+local(2))
-  func(4,3) = -0.125d0*(1.0d0-local(1))*(1.0d0+local(2))
-  func(5,3) =  0.125d0*(1.0d0-local(1))*(1.0d0-local(2))
-  func(6,3) =  0.125d0*(1.0d0+local(1))*(1.0d0-local(2))
-  func(7,3) =  0.125d0*(1.0d0+local(1))*(1.0d0+local(2))
-  func(8,3) =  0.125d0*(1.0d0-local(1))*(1.0d0+local(2))
-end subroutine C3D8_shapefunc_deriv
 
 subroutine C3D8_get_inverse_matrix(xj, inv, det)
   use util
@@ -102,9 +46,9 @@ subroutine C3D8_get_inverse_matrix(xj, inv, det)
       - xj(2,1) * xj(1,2) * xj(3,3) &
       - xj(1,1) * xj(3,2) * xj(2,3)
 
-  if( det==0.d0 ) stop "determinant = 0.0"
+  if( det==0.0d0 ) stop "determinant = 0.0"
 
-  detinv = 1.d0/det
+  detinv = 1.0d0/det
   inv(1,1) = detinv * ( xj(2,2)*xj(3,3) - xj(3,2)*xj(2,3))
   inv(1,2) = detinv * (-xj(1,2)*xj(3,3) + xj(3,2)*xj(1,3))
   inv(1,3) = detinv * ( xj(1,2)*xj(2,3) - xj(2,2)*xj(1,3))
@@ -128,12 +72,12 @@ subroutine C3D8_get_global_deriv(node, r, dndx, det)
   dndx = matmul( deriv, inv )
 end subroutine C3D8_get_global_deriv
 
-subroutine C3D8_Bmat(node, dndx, B)
+subroutine C3D8_Bmat(x1, dndx, B)
   use util
   implicit none
   type(meshdef) :: mesh
   integer(kint) :: i, i1, i2, i3
-  real(kdouble) :: node(3,8), B(6,24), dndx(8,3), dudx(3,3)
+  real(kdouble) :: x1(3,8), B(6,24), dndx(8,3), dudx(3,3)
 
   B = 0.0d0
   do i = 1,8
@@ -153,7 +97,7 @@ subroutine C3D8_Bmat(node, dndx, B)
 
   if(isNLGeom)then
     dudx = 0.0d0
-    dudx = matmul(node, dndx)
+    dudx = matmul(x1, dndx)
     do i = 1, 8
       i1 = 3*i-2
       i2 = 3*i-1
@@ -206,11 +150,11 @@ subroutine C3D8_Dmat(mesh, D)
   D(6,6) = g/(2.0d0-mu)
 end subroutine C3D8_Dmat
 
-subroutine C3D8_Kmat(mesh, icel, igsp, dndx, D, B, wg, det, stiff)
+subroutine C3D8_Kmat(mesh, stress, dndx, D, B, wg, det, stiff)
   use util
   implicit none
   type(meshdef) :: mesh
-  integer(kint) :: i, j, k, igsp, icel
+  integer(kint) :: i, j, k
   real(kdouble) :: stiff(24,24), D(6,6), B(6,24), DB(6,24), wg, det
   real(kdouble) :: stress(6), S(9,9), BN(9,24), SBN(9,24), dndx(8,3)
 
@@ -224,7 +168,7 @@ subroutine C3D8_Kmat(mesh, icel, igsp, dndx, D, B, wg, det, stiff)
   enddo
 
   if(isNLGeom)then
-    stress = mesh%gauss(igsp, icel)%stress
+    BN = 0.0d0
     do j=1, 8
       BN(1, 3*j-2) = dndx(j, 1)
       BN(2, 3*j-1) = dndx(j, 1)
@@ -236,6 +180,7 @@ subroutine C3D8_Kmat(mesh, icel, igsp, dndx, D, B, wg, det, stiff)
       BN(8, 3*j-1) = dndx(j, 3)
       BN(9, 3*j  ) = dndx(j, 3)
     enddo
+
     S = 0.0d0
     do j = 1, 3
       S(j  , j  ) = stress(1)
@@ -248,6 +193,7 @@ subroutine C3D8_Kmat(mesh, icel, igsp, dndx, D, B, wg, det, stiff)
       S(j+6, j+3) = stress(5)
       S(j+6, j+6) = stress(3)
     enddo
+
     SBN = matmul(S, BN)
     do i=1,24
       do j=1,24
@@ -259,28 +205,48 @@ subroutine C3D8_Kmat(mesh, icel, igsp, dndx, D, B, wg, det, stiff)
   endif
 end subroutine C3D8_Kmat
 
-subroutine C3D8_update(mesh, icel, node, u, q)
+subroutine C3D8_update(mesh, icel, q)
   use util
   implicit none
   type(meshdef) :: mesh
-  integer(kint) :: i, j, icel
-  real(kdouble) :: node(3,8), u(3,8), r(3), dndx(8,3), xj(3,3), D(6,6), B(6,24)
+  integer(kint) :: i, in, j, icel
+  real(kdouble) :: x0(3,8), x1(3,8), r(3), dndx(8,3), xj(3,3), D(6,6), B(6,24)
   real(kdouble) :: strain(6), stress(6), q(24), det
 
   q = 0.0d0
 
   do i=1,8
+    in = mesh%elem(i,icel)
+    x0(1,i) = mesh%node(1,in)
+    x0(2,i) = mesh%node(2,in)
+    x0(3,i) = mesh%node(3,in)
+    x1(1,i) = mesh%u(3*i-2) + mesh%du(3*i-2) + mesh%X(3*in-2)
+    x1(2,i) = mesh%u(3*i-1) + mesh%du(3*i-1) + mesh%X(3*in-1)
+    x1(3,i) = mesh%u(3*i  ) + mesh%du(3*i  ) + mesh%X(3*in  )
+  enddo
+
+  do i=1,8
     call C3D8_integral_point(i, r)
-    call C3D8_get_global_deriv(node, r, dndx, det)
-    call C3D8_Bmat(node, dndx, B)
+    call C3D8_get_global_deriv(x0, r, dndx, det)
+    call C3D8_Bmat(x1, dndx, B)
     call C3D8_Dmat(mesh, D)
-    xj = matmul(u, dndx)
+    xj = matmul(x1, dndx)
     strain(1) = xj(1,1)
     strain(2) = xj(2,2)
     strain(3) = xj(3,3)
     strain(4) =(xj(1,2) + xj(2,1))
     strain(5) =(xj(2,3) + xj(3,2))
     strain(6) =(xj(3,1) + xj(1,3))
+
+    if(isNLGeom)then
+      strain(1) = strain(1) + 0.5d0*dot_product(xj(:, 1), xj(:, 1))
+      strain(2) = strain(2) + 0.5d0*dot_product(xj(:, 2), xj(:, 2))
+      strain(3) = strain(3) + 0.5d0*dot_product(xj(:, 3), xj(:, 3))
+      strain(4) = strain(4) + (xj(1,1)*xj(1,2) + xj(2,1)*xj(2,2) + xj(3,1)*xj(3,2))
+      strain(5) = strain(5) + (xj(1,2)*xj(1,3) + xj(2,2)*xj(2,3) + xj(3,2)*xj(3,3))
+      strain(6) = strain(6) + (xj(1,1)*xj(1,3) + xj(2,1)*xj(2,3) + xj(3,1)*xj(3,3))
+    endif
+
     stress = matmul(D, strain)
     mesh%gauss(i,icel)%strain = strain
     mesh%gauss(i,icel)%stress = stress

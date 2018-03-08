@@ -5,8 +5,8 @@ module util
   logical, save :: isNLGeom = .false.
 
   type gaussdef
-    real(kdouble) :: strain(6)
-    real(kdouble) :: stress(6)
+    real(kdouble) :: strain(6) = 0.0d0
+    real(kdouble) :: stress(6) = 0.0d0
   end type gaussdef
 
   type meshdef
@@ -59,7 +59,8 @@ program main
   if(isNLGeom)then
     call nonlinear_static(mesh)
   else
-    call static(mesh)
+    !call static(mesh)
+    call nonlinear_static(mesh)
   endif
 
   call outout_res(mesh)

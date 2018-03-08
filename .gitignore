@@ -2,4 +2,4 @@
 *.mod
 *.out
 *.inp
-DS_STORE
+.DS_STORE
