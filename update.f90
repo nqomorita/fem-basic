@@ -30,11 +30,11 @@ subroutine stress_update(mesh)
   implicit none
   type(meshdef) :: mesh
   integer(kint) :: i, j, in, icel, n, ndof, elem(8)
-  real(kdouble) :: node(3,8), u(3,8), r(3), det
+  real(kdouble) :: node(3,8), u(3,8), r(3), tmp
   real(kdouble) :: func(8,8), inv(8,8)
   real(kdouble) :: nstrain(8,6), nstress(8,6)
   real(kdouble) :: estrain(6),   estress(6)
-  real(kdouble) :: q_elem(24)
+  real(kdouble) :: q(24)
   integer(kint), allocatable :: inode(:)
 
   do i=1,mesh%nnode
@@ -53,8 +53,10 @@ subroutine stress_update(mesh)
   enddo
   call get_inverse_matrix(8, func, inv)
 
+  mesh%q = 0.0d0
+
   do icel=1,mesh%nelem
-    call C3D8_update(mesh, icel, q_elem)
+    call C3D8_update(mesh, icel, q)
     call C3D8_get_nodal_values(mesh, icel, inv, nstrain, nstress, estrain, estress)
 
     do i=1,8
@@ -64,9 +66,9 @@ subroutine stress_update(mesh)
         mesh%nstrain(j,in) = mesh%nstrain(j,in) + nstrain(i,j)
         mesh%nstress(j,in) = mesh%nstress(j,in) + nstress(i,j)
       enddo
-      mesh%q(3*in-2) = q_elem(3*i-2)
-      mesh%q(3*in-1) = q_elem(3*i-1)
-      mesh%q(3*in  ) = q_elem(3*i  )
+      mesh%q(3*in-2) = mesh%q(3*in-2) + q(3*i-2)
+      mesh%q(3*in-1) = mesh%q(3*in-1) + q(3*i-1)
+      mesh%q(3*in  ) = mesh%q(3*in  ) + q(3*i  )
     enddo
 
     do j=1,6
@@ -76,10 +78,10 @@ subroutine stress_update(mesh)
   enddo
 
   do i=1,mesh%nnode
-    det = 1.0d0/dble(inode(i))
+    tmp = 1.0d0/dble(inode(i))
     do j=1,6
-      mesh%nstrain(j,i) = mesh%nstrain(j,i) * det
-      mesh%nstress(j,i) = mesh%nstress(j,i) * det
+      mesh%nstrain(j,i) = mesh%nstrain(j,i) * tmp
+      mesh%nstress(j,i) = mesh%nstress(j,i) * tmp
     enddo
   enddo
 
