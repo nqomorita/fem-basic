@@ -59,8 +59,8 @@ program main
   if(isNLGeom)then
     call nonlinear_static(mesh)
   else
-    !call static(mesh)
-    call nonlinear_static(mesh)
+    call static(mesh)
+    !call nonlinear_static(mesh)
   endif
 
   call outout_res(mesh)

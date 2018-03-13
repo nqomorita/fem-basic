@@ -5,6 +5,11 @@ subroutine static(mesh)
   type(meshdef) :: mesh
   integer(kint) :: i
 
+  mesh%u  = 0.0d0
+  mesh%du = 0.0d0
+  mesh%cur_tstep  = 1
+  mesh%cur_nrstep = 1
+
   call stiff_matrix(mesh)
   call load_condition(mesh)
   call get_RHS(mesh)
@@ -26,7 +31,7 @@ subroutine nonlinear_static(mesh)
   mesh%du = 0.0d0
   mesh%cur_tstep = 1
 
-  do NRiter=1,2
+  do NRiter=1,1
     mesh%cur_nrstep = NRiter
     write(*,"(a)")""
     write(*,"(a,i8)")"** NRiter:", NRiter

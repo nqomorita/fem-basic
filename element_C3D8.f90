@@ -18,9 +18,9 @@ subroutine C3D8_stiff(mesh, icel, elem, stiff)
     x0(1,i) = mesh%node(1,in)
     x0(2,i) = mesh%node(2,in)
     x0(3,i) = mesh%node(3,in)
-    u(1,i)  = mesh%u(3*i-2) + mesh%du(3*i-2)
-    u(2,i)  = mesh%u(3*i-1) + mesh%du(3*i-1)
-    u(3,i)  = mesh%u(3*i  ) + mesh%du(3*i  )
+    u(1,i)  = mesh%u(3*in-2) + mesh%du(3*in-2)
+    u(2,i)  = mesh%u(3*in-1) + mesh%du(3*in-1)
+    u(3,i)  = mesh%u(3*in  ) + mesh%du(3*in  )
   enddo
 
   do i=1,8
@@ -219,9 +219,9 @@ subroutine C3D8_update(mesh, icel, q)
     x0(1,i) = mesh%node(1,in)
     x0(2,i) = mesh%node(2,in)
     x0(3,i) = mesh%node(3,in)
-    u(1,i)  = mesh%u(3*i-2) + mesh%du(3*i-2) + mesh%X(3*i-2)
-    u(2,i)  = mesh%u(3*i-1) + mesh%du(3*i-1) + mesh%X(3*i-1)
-    u(3,i)  = mesh%u(3*i  ) + mesh%du(3*i  ) + mesh%X(3*i  )
+    u(1,i)  = mesh%u(3*in-2) + mesh%du(3*in-2) + mesh%X(3*in-2)
+    u(2,i)  = mesh%u(3*in-1) + mesh%du(3*in-1) + mesh%X(3*in-1)
+    u(3,i)  = mesh%u(3*in  ) + mesh%du(3*in  ) + mesh%X(3*in  )
   enddo
 
   do i=1,8
