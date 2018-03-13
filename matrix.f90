@@ -7,6 +7,8 @@ subroutine stiff_matrix(mesh)
   integer(kint) :: elem(8)
   real(kdouble) :: stiff(24,24)
 
+  mesh%A = 0.0d0
+
   do icel=1,mesh%nelem
     do i=1,8
       elem(i) = mesh%elem(i, icel)

@@ -14,7 +14,7 @@ subroutine LU(nndof, Ain, B, X)
   integer(kint) :: i, j, k, nndof
   real(kdouble) :: Ain(nndof, nndof), B(nndof), X(nndof)
   real(kdouble), allocatable :: A(:,:)
-  real(kdouble) :: T
+  real(kdouble) :: t
 
   allocate(A(nndof, nndof))
   do i=1, nndof
@@ -36,19 +36,19 @@ subroutine LU(nndof, Ain, B, X)
   X = B
 
   do i=1,nndof
-    T = 0.0d0
+    t = 0.0d0
     do j=1,i-1
-      T = T + A(j,i) * X(j)
+      t = t + A(j,i) * X(j)
     enddo
-    X(i) = X(i) - T
+    X(i) = X(i) - t
   enddo
 
   do i=nndof, 1, -1
-    T = 0.0d0
+    t = 0.0d0
     do j=nndof, i+1, -1
-      T = T + A(j,i) * X(j)
+      t = t + A(j,i) * X(j)
     enddo
-    X(i) = X(i) - T
+    X(i) = X(i) - t
     X(i) = X(i) * A(i,i)
   enddo
 

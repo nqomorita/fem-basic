@@ -31,13 +31,14 @@ subroutine nonlinear_static(mesh)
   mesh%du = 0.0d0
   mesh%cur_tstep = 1
 
-  do NRiter=1,1
+  call load_condition(mesh)
+
+  do NRiter=1,mesh%max_nrstep
     mesh%cur_nrstep = NRiter
     write(*,"(a)")""
     write(*,"(a,i8)")"** NRiter:", NRiter
 
     call stiff_matrix(mesh)
-    call load_condition(mesh)
     call get_RHS(mesh)
     call bound_condition(mesh)
     call is_convergence(mesh)
