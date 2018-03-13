@@ -30,7 +30,6 @@ subroutine C3D8_stiff(mesh, icel, elem, stiff)
     call C3D8_Dmat(mesh, D)
     call C3D8_Kmat(mesh, mesh%gauss(i,icel)%stress, dndx, D, B, wg, det, stiff)
   enddo
-
 end subroutine C3D8_stiff
 
 subroutine C3D8_get_inverse_matrix(xj, inv, det)
@@ -144,9 +143,9 @@ subroutine C3D8_Dmat(mesh, D)
   D(3,1) = g*mu
   D(3,2) = g*mu
   D(3,3) = g*(1.0d0-mu)
-  D(4,4) = g/(2.0d0-mu)
-  D(5,5) = g/(2.0d0-mu)
-  D(6,6) = g/(2.0d0-mu)
+  D(4,4) = 0.5d0*g*(1.0d0-2.0d0*mu)
+  D(5,5) = 0.5d0*g*(1.0d0-2.0d0*mu)
+  D(6,6) = 0.5d0*g*(1.0d0-2.0d0*mu)
 end subroutine C3D8_Dmat
 
 subroutine C3D8_Kmat(mesh, stress, dndx, D, B, wg, det, stiff)
@@ -158,6 +157,7 @@ subroutine C3D8_Kmat(mesh, stress, dndx, D, B, wg, det, stiff)
   real(kdouble) :: stress(6), S(9,9), BN(9,24), SBN(9,24), dndx(8,3)
 
   DB = matmul(D, B)
+
   do i=1,24
     do j=1,24
       do k=1,6
@@ -181,7 +181,7 @@ subroutine C3D8_Kmat(mesh, stress, dndx, D, B, wg, det, stiff)
     enddo
 
     S = 0.0d0
-    do j = 1, 3
+    do j=1, 3
       S(j  , j  ) = stress(1)
       S(j  , j+3) = stress(4)
       S(j  , j+6) = stress(6)
@@ -197,7 +197,7 @@ subroutine C3D8_Kmat(mesh, stress, dndx, D, B, wg, det, stiff)
     do i=1,24
       do j=1,24
         do k=1,9
-          stiff(j,i) = stiff(j,i) + BN(k,j) * SBN(k,i) * wg
+          stiff(j,i) = stiff(j,i) + BN(k,j) * SBN(k,i) * wg * det
         enddo
       enddo
     enddo

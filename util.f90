@@ -11,10 +11,12 @@ subroutine is_convergence(mesh)
   do i=1,3*mesh%nnode
     bnrm = bnrm + mesh%B(i)*mesh%B(i)
   enddo
+  bnrm = dsqrt(bnrm)
   if(mesh%cur_nrstep == 1)then
     b0nrm = bnrm
+    write(*,"(a,1pe12.5)")"  ** NR        b0nrm: ", b0nrm
   else
-    rnrm    = dsqrt(bnrm/b0nrm)
+    rnrm    = bnrm/b0nrm
     rnrmmax = dabs(maxval(mesh%B))
     write(*,"(a,1pe12.5,a,1pe12.5)")"  ** NR     residual: ", rnrm, ", ", rnrmmax
   endif

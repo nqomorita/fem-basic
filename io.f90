@@ -8,6 +8,7 @@ subroutine input_mesh(mesh)
   open(10, file="input.dat", status='old')
     read(10,*) i
     if(i == 1) isNLGeom = .true.
+    read(10,*) mesh%max_nrstep
     read(10,*) mesh%nnode
     allocate(mesh%node(3, mesh%nnode))
     do i=1, mesh%nnode

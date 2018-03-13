@@ -48,6 +48,8 @@ subroutine load_condition(mesh)
   integer(kint) :: i, in, dof
   real(kdouble) :: val
 
+  mesh%f = 0.0d0
+
   !cload
   do i=1,mesh%ncload
     in  = mesh%icload(1, i)
@@ -57,6 +59,19 @@ subroutine load_condition(mesh)
     mesh%f(3*in-3+dof) = val
   enddo
 end subroutine load_condition
+
+subroutine get_RHS(mesh)
+  use util
+  implicit none
+  type(meshdef) :: mesh
+  integer(kint) :: i
+
+  do i=1,mesh%nnode
+    mesh%B(3*i-2) = mesh%f(3*i-2) - mesh%q(3*i-2)
+    mesh%B(3*i-1) = mesh%f(3*i-1) - mesh%q(3*i-1)
+    mesh%B(3*i  ) = mesh%f(3*i  ) - mesh%q(3*i  )
+  enddo
+end subroutine get_RHS
 
 subroutine bound_condition(mesh)
   use util
@@ -83,15 +98,3 @@ subroutine bound_condition(mesh)
   enddo
 end subroutine bound_condition
 
-subroutine get_RHS(mesh)
-  use util
-  implicit none
-  type(meshdef) :: mesh
-  integer(kint) :: i
-
-  do i=1,mesh%nnode
-    mesh%B(3*i-2) = mesh%f(3*i-2) - mesh%q(3*i-2)
-    mesh%B(3*i-1) = mesh%f(3*i-1) - mesh%q(3*i-1)
-    mesh%B(3*i  ) = mesh%f(3*i  ) - mesh%q(3*i  )
-  enddo
-end subroutine get_RHS

@@ -12,6 +12,7 @@ module util
   type meshdef
     integer(kint) :: cur_tstep
     integer(kint) :: cur_nrstep
+    integer(kint) :: max_nrstep
 
     integer(kint) :: nnode
     real(kdouble), pointer :: node(:,:)
@@ -59,8 +60,8 @@ program main
   if(isNLGeom)then
     call nonlinear_static(mesh)
   else
-    call static(mesh)
-    !call nonlinear_static(mesh)
+    !call static(mesh)
+    call nonlinear_static(mesh)
   endif
 
   call outout_res(mesh)

@@ -86,10 +86,10 @@ subroutine stress_update(mesh)
   enddo
 
   do i=1,mesh%nnode
-    call get_mises(mesh%nstress(1:6,i),  mesh%nmises(i))
+    call get_mises(mesh%nstress(1:6,i), mesh%nmises(i))
   enddo
   do i=1,mesh%nelem
-    call get_mises(mesh%estress(1:6,i),  mesh%emises(i))
+    call get_mises(mesh%estress(1:6,i), mesh%emises(i))
   enddo
 
   deallocate(inode)
