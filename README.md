@@ -4,7 +4,10 @@
     - C3D8
         - full integration
 - analysis
+    - nonlinear static
     - static
+- matrix format
+    - dence matrix
 - solver
     - LU factorization
 - input
