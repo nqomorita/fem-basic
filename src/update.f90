@@ -29,7 +29,7 @@ subroutine stress_update(mesh)
   use util
   implicit none
   type(meshdef) :: mesh
-  integer(kint) :: i, j, in, icel, n, ndof, elem(8)
+  integer(kint) :: i, j, in, icel, n, elem(8)
   real(kdouble) :: node(3,8), u(3,8), r(3), tmp
   real(kdouble) :: func(8,8), inv(8,8)
   real(kdouble) :: nstrain(8,6), nstress(8,6)

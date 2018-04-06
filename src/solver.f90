@@ -4,8 +4,8 @@ subroutine solver(mesh)
   implicit none
   type(meshdef) :: mesh
 
-  call LU(3*mesh%nnode, mesh%A, mesh%B, mesh%X)
-  call residual(3*mesh%nnode, mesh%A, mesh%B, mesh%X)
+  call LU(ndof*mesh%nnode, mesh%A, mesh%B, mesh%X)
+  call residual(ndof*mesh%nnode, mesh%A, mesh%B, mesh%X)
 end subroutine solver
 
 subroutine LU(nndof, Ain, B, X)

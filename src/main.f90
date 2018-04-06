@@ -1,6 +1,7 @@
 module util
   integer(4), parameter :: kint    = 4
   integer(4), parameter :: kdouble = 8
+  integer(kint), parameter :: ndof = 3
 
   logical, save :: isNLGeom = .false.
 

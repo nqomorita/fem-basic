@@ -57,8 +57,8 @@ subroutine load_condition(mesh)
     in  = mesh%icload(1, i)
     dof = mesh%icload(2, i)
     val = mesh%cload(i)
-    if(3 < dof) stop "*** error: 3 < dof"
-    mesh%f(3*in-3+dof) = val
+    if(ndof < dof) stop "*** error: 3 < dof"
+    mesh%f(ndof*(in-1) + dof) = val
   enddo
 end subroutine load_condition
 
@@ -86,11 +86,11 @@ subroutine bound_condition(mesh)
   do i=1,mesh%nbound
     in  = mesh%ibound(1, i)
     dof = mesh%ibound(2, i)
-    if(3 < dof) stop "*** error: 3 < dof"
+    if(ndof < dof) stop "*** error: 3 < dof"
     !val = mesh%bound(i)
     !mesh%B(3*in-3+dof) = val
-    jn  = 3*in-3+dof
-    do j=1,3*mesh%nnode
+    jn  = ndof*(in-1) + dof
+    do j=1,ndof*mesh%nnode
       mesh%A(jn, j) = 0.0d0
       mesh%A(j, jn) = 0.0d0
     enddo
