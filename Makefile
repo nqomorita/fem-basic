@@ -1,29 +1,26 @@
-FC = gfortran
-F_OPT = -O2 -fbounds-check -fbacktrace -ffpe-trap=invalid
-TARGET = a.out
-OBJS = main.o analysis.o update.o matrix.o shape_C3D8.o element_C3D8.o solver.o io.o util.o
+FC       = gfortran
+FFLAGS   = -O2 -fbounds-check -fbacktrace -ffpe-trap=invalid
+LDFLAGS  =
+LIBS     =
+INCLUDE  = -I ./include
+MOD_DIR  = -J ./include
+BIN_DIR  = ./bin
+SRC_DIR  = ./src
+OBJ_DIR  = ./build
+BIN_LIST = a.out
+TARGET   = $(addprefix $(BIN_DIR)/, $(BIN_LIST))
+SRC_LIST = main.f90 analysis.f90 update.f90 matrix.f90 shape_C3D8.f90 element_C3D8.f90 solver.f90 io.f90 util.f90
+SOURCES  = $(addprefix $(SRC_DIR)/, $(SRC_LIST))
+OBJS     = $(subst $(SRC_DIR), $(OBJ_DIR), $(SOURCES:.f90=.o))
+RM       = rm
 
-$(TARGET):$(OBJS)
-	$(FC) $(F_OPT) -o $(TARGET) $(OBJS)
+$(TARGET): $(OBJS) $(LIBS)
+	$(FC) -o $@ $(OBJS) $(LDFLAGS)
 
-main.o: main.f90
-	$(FC) -c $(F_OPT) main.f90
-analysis.o: analysis.f90
-	$(FC) -c $(F_OPT) analysis.f90
-update.o: update.f90
-	$(FC) -c $(F_OPT) update.f90
-matrix.o: matrix.f90
-	$(FC) -c $(F_OPT) matrix.f90
-element_C3D8.o: element_C3D8.f90
-	$(FC) -c $(F_OPT) element_C3D8.f90
-shape_C3D8.o: shape_C3D8.f90
-	$(FC) -c $(F_OPT) shape_C3D8.f90
-solver.o: solver.f90
-	$(FC) -c $(F_OPT) solver.f90
-io.o: io.f90
-	$(FC) -c $(F_OPT) io.f90
-util.o: util.f90
-	$(FC) -c $(F_OPT) util.f90
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.f90
+	$(FC) $(FFLAGS) $(INCLUDE) $(MOD_DIR) -o $@ -c $<
 
 clean:
-	rm *.o *.mod a.out
+	$(RM) $(OBJS) $(TARGET) ./include/*.mod
+
+.PHONY: clean

@@ -2,4 +2,5 @@
 *.mod
 *.out
 *.inp
+*.dat
 .DS_STORE
