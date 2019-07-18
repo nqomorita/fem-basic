@@ -30,15 +30,15 @@ subroutine merge(mesh, elem, stiff)
     in = elem(i)
     do j=1, 8
       jn = elem(j)
-      mesh%A(3*jn-2, 3*in-2) = mesh%A(3*jn-2, 3*in-2) + stiff(3*j-2, 3*i-2)
-      mesh%A(3*jn-2, 3*in-1) = mesh%A(3*jn-2, 3*in-1) + stiff(3*j-2, 3*i-1)
-      mesh%A(3*jn-2, 3*in  ) = mesh%A(3*jn-2, 3*in  ) + stiff(3*j-2, 3*i  )
-      mesh%A(3*jn-1, 3*in-2) = mesh%A(3*jn-1, 3*in-2) + stiff(3*j-1, 3*i-2)
-      mesh%A(3*jn-1, 3*in-1) = mesh%A(3*jn-1, 3*in-1) + stiff(3*j-1, 3*i-1)
-      mesh%A(3*jn-1, 3*in  ) = mesh%A(3*jn-1, 3*in  ) + stiff(3*j-1, 3*i  )
-      mesh%A(3*jn  , 3*in-2) = mesh%A(3*jn  , 3*in-2) + stiff(3*j  , 3*i-2)
-      mesh%A(3*jn  , 3*in-1) = mesh%A(3*jn  , 3*in-1) + stiff(3*j  , 3*i-1)
-      mesh%A(3*jn  , 3*in  ) = mesh%A(3*jn  , 3*in  ) + stiff(3*j  , 3*i  )
+      !mesh%A(3*jn-2, 3*in-2) = mesh%A(3*jn-2, 3*in-2) + stiff(3*j-2, 3*i-2)
+      !mesh%A(3*jn-2, 3*in-1) = mesh%A(3*jn-2, 3*in-1) + stiff(3*j-2, 3*i-1)
+      !mesh%A(3*jn-2, 3*in  ) = mesh%A(3*jn-2, 3*in  ) + stiff(3*j-2, 3*i  )
+      !mesh%A(3*jn-1, 3*in-2) = mesh%A(3*jn-1, 3*in-2) + stiff(3*j-1, 3*i-2)
+      !mesh%A(3*jn-1, 3*in-1) = mesh%A(3*jn-1, 3*in-1) + stiff(3*j-1, 3*i-1)
+      !mesh%A(3*jn-1, 3*in  ) = mesh%A(3*jn-1, 3*in  ) + stiff(3*j-1, 3*i  )
+      !mesh%A(3*jn  , 3*in-2) = mesh%A(3*jn  , 3*in-2) + stiff(3*j  , 3*i-2)
+      !mesh%A(3*jn  , 3*in-1) = mesh%A(3*jn  , 3*in-1) + stiff(3*j  , 3*i-1)
+      !mesh%A(3*jn  , 3*in  ) = mesh%A(3*jn  , 3*in  ) + stiff(3*j  , 3*i  )
     enddo
   enddo
 end subroutine merge
@@ -90,11 +90,11 @@ subroutine bound_condition(mesh)
     !val = mesh%bound(i)
     !mesh%B(3*in-3+dof) = val
     jn  = ndof*(in-1) + dof
-    do j=1,ndof*mesh%nnode
-      mesh%A(jn, j) = 0.0d0
-      mesh%A(j, jn) = 0.0d0
-    enddo
-    mesh%A(jn, jn) = 1.0d0
+    !do j=1,ndof*mesh%nnode
+    !  mesh%A(jn, j) = 0.0d0
+    !  mesh%A(j, jn) = 0.0d0
+    !enddo
+    !mesh%A(jn, jn) = 1.0d0
 
     mesh%B(jn) = 0.0d0
   enddo

@@ -36,7 +36,9 @@ module util
     real(kdouble), pointer :: q(:)
     real(kdouble), pointer :: f(:)
 
-    real(kdouble), pointer :: A(:,:)
+    integer(kint), pointer :: item(:)
+    integer(kint), pointer :: index(:)
+    real(kdouble), pointer :: A(:)
     real(kdouble), pointer :: B(:)
     real(kdouble), pointer :: X(:)
 

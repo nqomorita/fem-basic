@@ -59,7 +59,6 @@ subroutine init_mesh(mesh)
   allocate(mesh%du(ndof*mesh%nnode))
   allocate(mesh%q (ndof*mesh%nnode))
   allocate(mesh%f (ndof*mesh%nnode))
-  allocate(mesh%A (ndof*mesh%nnode, ndof*mesh%nnode))
   allocate(mesh%x (ndof*mesh%nnode))
   allocate(mesh%b (ndof*mesh%nnode))
   mesh%nstrain = 0.0d0
@@ -72,10 +71,105 @@ subroutine init_mesh(mesh)
   mesh%du      = 0.0d0
   mesh%q       = 0.0d0
   mesh%f       = 0.0d0
-  mesh%A       = 0.0d0
   mesh%x       = 0.0d0
   mesh%b       = 0.0d0
 end subroutine init_mesh
+
+subroutine init_matrix(mesh)
+  use util
+  implicit none
+  type(meshdef) :: mesh
+  integer(kint) :: i, j, k, in, jn, kn, jS, jE, el(8)
+  integer(kint) :: nnode, nz, imin, imax, tsize
+  integer(kint), allocatable :: temp(:,:), buget(:)
+
+  tsize = 20
+  nnode = mesh%nnode
+  allocate(temp(tsize,nnode))
+  temp = 0
+
+  do i = 1, mesh%nelem
+    do j = 1, 8
+      el(j) = mesh%elem(j,i)
+    enddo
+    do j = 1, 8
+      do k = 1, 8
+        call add_temp(nnode, tsize, el(j), el(k), temp)
+      enddo
+    enddo
+  enddo
+
+  allocate(mesh%index(0:nnode))
+  mesh%index = 0
+  do i = 1, nnode
+    in = 0
+    do j = 1, tsize
+      if(temp(j,i) /= 0) in = in + 1
+    enddo
+    imin = minval(temp(1:in,i))
+    imax = maxval(temp(1:in,i))
+    allocate(buget(imin:imax))
+    buget = 0
+    do j = 1, in
+      buget(temp(j,i)) = 1
+    enddo
+    in = 0
+    do j = imin, imax
+      if(buget(j) == 1) in = in + 1
+    enddo
+    mesh%index(i) = in
+    deallocate(buget)
+  enddo
+
+  do i = 1, nnode
+    mesh%index(i) = mesh%index(i) + mesh%index(i-1)
+  enddo
+
+  nz = mesh%index(nnode)
+  allocate(mesh%A(nz))
+  allocate(mesh%item(nz))
+  mesh%A = 0.0d0
+  mesh%item = 0
+
+  jn = 0
+  do i = 1, nnode
+    in = 0
+    do j = 1, tsize
+      if(temp(j,i) /= 0) in = in + 1
+    enddo
+    imin = minval(temp(1:in,i))
+    imax = maxval(temp(1:in,i))
+    allocate(buget(imin:imax))
+    buget = 0
+    do j = 1, in
+      buget(temp(j,i)) = 1
+    enddo
+    !> 1st row
+    do j = imin, imax
+      if(buget(j) == 1)then
+        jn = jn + 1
+        mesh%item(jn) = j
+      endif
+    enddo
+    deallocate(buget)
+  enddo
+end subroutine init_matrix
+
+subroutine add_temp(nnode, tsize, e1, e2, temp)
+  use util
+  implicit none
+  integer(kint) :: e1, e2, temp(tsize,nnode)
+  integer(kint) :: i, in, nnode, tsize
+
+  in = 0
+  do i = 1, tsize
+    if(temp(i,e1) /= 0) in = in + 1
+    if(temp(i,e1) == e2) return
+  enddo
+  if(in == tsize) stop "error add_temp"
+
+  temp(in+1,e1) = e2
+end subroutine add_temp
 
 subroutine outout_res(mesh)
   use util
