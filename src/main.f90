@@ -54,8 +54,12 @@ end module util
 
 program main
   use util
+  use mod_monolis_util
   implicit none
   type(meshdef) :: mesh
+  type(monolis_structure) :: monolis
+
+  call monolis_initialize(monolis%PRM, monolis%COM, monolis%MAT)
 
   call input_mesh(mesh)
   call init_mesh(mesh)
@@ -70,4 +74,6 @@ program main
 
   call outout_res(mesh)
   call finalize_mesh(mesh)
+
+  call monolis_finalize(monolis%PRM, monolis%COM, monolis%MAT)
 end program main

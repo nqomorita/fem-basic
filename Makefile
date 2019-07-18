@@ -1,8 +1,13 @@
-FC       = gfortran
+FC       = mpif90
 FFLAGS   = -O2 -fbounds-check -fbacktrace -ffpe-trap=invalid
 LDFLAGS  =
-LIBS     =
-INCLUDE  = -I ./include
+
+MONOLIS_DIR= /Users/morita/monolis
+MONOLIS_INC= -I $(MONOLIS_DIR)/include
+MONOLIS_LIB= -L$(MONOLIS_DIR)/lib -lmonolis
+
+LIBS     = $(MONOLIS_LIB)
+INCLUDE  = -I ./include $(MONOLIS_INC)
 MOD_DIR  = -J ./include
 BIN_DIR  = ./bin
 SRC_DIR  = ./src
@@ -14,8 +19,8 @@ SOURCES  = $(addprefix $(SRC_DIR)/, $(SRC_LIST))
 OBJS     = $(subst $(SRC_DIR), $(OBJ_DIR), $(SOURCES:.f90=.o))
 RM       = rm
 
-$(TARGET): $(OBJS) $(LIBS)
-	$(FC) -o $@ $(OBJS) $(LDFLAGS)
+$(TARGET): $(OBJS)
+	$(FC) -o $@ $(OBJS) $(LDFLAGS) $(LIBS)
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.f90
 	$(FC) $(FFLAGS) $(INCLUDE) $(MOD_DIR) -o $@ -c $<
