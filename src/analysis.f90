@@ -42,7 +42,7 @@ subroutine nonlinear_static(mesh)
     call get_RHS(mesh)
     call bound_condition(mesh)
     call is_convergence(mesh)
-    call solver(mesh)
+    !call solver(mesh)
     call stress_update(mesh)
     call delta_u_update(mesh)
   enddo

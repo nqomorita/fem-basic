@@ -126,7 +126,7 @@ subroutine init_matrix(mesh)
   enddo
 
   nz = mesh%index(nnode)
-  allocate(mesh%A(nz))
+  allocate(mesh%A(9*nz))
   allocate(mesh%item(nz))
   mesh%A = 0.0d0
   mesh%item = 0

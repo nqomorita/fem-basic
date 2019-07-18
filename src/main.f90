@@ -59,6 +59,7 @@ program main
 
   call input_mesh(mesh)
   call init_mesh(mesh)
+  call init_matrix(mesh)
 
   if(isNLGeom)then
     call nonlinear_static(mesh)
