@@ -20,7 +20,7 @@ subroutine solver(mesh, monolis)
   monolis%PRM%is_scaling = .false.
   monolis%PRM%is_reordering = .false.
   monolis%PRM%is_init_x = .true.
-  monolis%PRM%show_iterlog = .true.
+  monolis%PRM%show_iterlog = .false.
 
   call monolis_solve(monolis%PRM, monolis%COM, monolis%MAT)
   !call LU(ndof*mesh%nnode, mesh%A, mesh%B, mesh%X)

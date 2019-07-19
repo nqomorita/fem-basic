@@ -94,8 +94,9 @@ subroutine bound_condition(mesh)
     in  = mesh%ibound(1, nb)
     dof = mesh%ibound(2, nb)
     if(ndof < dof) stop "*** error: 3 < dof"
-    !val = mesh%bound(i)
-    !mesh%B(3*in-3+dof) = val
+
+    mesh%B(3*in-3+dof) = 0.0d0
+
     do i = 1, mesh%nnode
       jS = mesh%index(i-1) + 1
       jE = mesh%index(i)
