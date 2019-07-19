@@ -7,9 +7,25 @@ subroutine solver(mesh, monolis)
   type(meshdef) :: mesh
   type(monolis_structure) :: monolis
 
+  monolis%MAT%N = mesh%nnode
+  monolis%MAT%NP = mesh%nnode
+  monolis%MAT%NZ = mesh%index(mesh%nnode)
+  monolis%MAT%NDOF = 3
+  monolis%MAT%index => mesh%index
+  monolis%MAT%item => mesh%item
+  monolis%MAT%A => mesh%A
+  monolis%MAT%B => mesh%B
+  monolis%MAT%X => mesh%X
+
   call monolis_solve(monolis%PRM, monolis%COM, monolis%MAT)
   !call LU(ndof*mesh%nnode, mesh%A, mesh%B, mesh%X)
   !call residual(ndof*mesh%nnode, mesh%A, mesh%B, mesh%X)
+
+  nullify(monolis%MAT%index)
+  nullify(monolis%MAT%item)
+  nullify(monolis%MAT%A)
+  nullify(monolis%MAT%B)
+  nullify(monolis%MAT%X)
 end subroutine solver
 
 subroutine LU(nndof, Ain, B, X)
