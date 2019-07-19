@@ -34,15 +34,15 @@ subroutine merge(mesh, elem, stiff)
       do k = jS, jE
         jn = mesh%item(k)
         if(jn == elem(j))then
-          mesh%A(9*k-8) = mesh%A(9*k-8) + stiff(3*j-2,3*i-2)
-          mesh%A(9*k-7) = mesh%A(9*k-7) + stiff(3*j-2,3*i-1)
-          mesh%A(9*k-6) = mesh%A(9*k-6) + stiff(3*j-2,3*i  )
-          mesh%A(9*k-5) = mesh%A(9*k-5) + stiff(3*j-1,3*i-2)
-          mesh%A(9*k-4) = mesh%A(9*k-4) + stiff(3*j-1,3*i-1)
-          mesh%A(9*k-3) = mesh%A(9*k-3) + stiff(3*j-1,3*i  )
-          mesh%A(9*k-2) = mesh%A(9*k-2) + stiff(3*j  ,3*i-2)
-          mesh%A(9*k-1) = mesh%A(9*k-1) + stiff(3*j  ,3*i-1)
-          mesh%A(9*k  ) = mesh%A(9*k  ) + stiff(3*j  ,3*i  )
+          mesh%A(9*k-8) = mesh%A(9*k-8) + stiff(3*i-2,3*j-2)
+          mesh%A(9*k-7) = mesh%A(9*k-7) + stiff(3*i-2,3*j-1)
+          mesh%A(9*k-6) = mesh%A(9*k-6) + stiff(3*i-2,3*j  )
+          mesh%A(9*k-5) = mesh%A(9*k-5) + stiff(3*i-1,3*j-2)
+          mesh%A(9*k-4) = mesh%A(9*k-4) + stiff(3*i-1,3*j-1)
+          mesh%A(9*k-3) = mesh%A(9*k-3) + stiff(3*i-1,3*j  )
+          mesh%A(9*k-2) = mesh%A(9*k-2) + stiff(3*i  ,3*j-2)
+          mesh%A(9*k-1) = mesh%A(9*k-1) + stiff(3*i  ,3*j-1)
+          mesh%A(9*k  ) = mesh%A(9*k  ) + stiff(3*i  ,3*j  )
           cycle aa
         endif
       enddo

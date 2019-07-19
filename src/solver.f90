@@ -17,10 +17,14 @@ subroutine solver(mesh, monolis)
   monolis%MAT%B => mesh%B
   monolis%MAT%X => mesh%X
 
+  monolis%PRM%is_scaling = .false.
+  monolis%PRM%is_reordering = .false.
+  monolis%PRM%is_init_x = .true.
+  monolis%PRM%show_iterlog = .true.
+
   call monolis_solve(monolis%PRM, monolis%COM, monolis%MAT)
   !call LU(ndof*mesh%nnode, mesh%A, mesh%B, mesh%X)
   !call residual(ndof*mesh%nnode, mesh%A, mesh%B, mesh%X)
-write(*,"(1p3e12.4)")mesh%X
 
   nullify(monolis%MAT%index)
   nullify(monolis%MAT%item)
