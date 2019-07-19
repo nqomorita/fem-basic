@@ -10,7 +10,7 @@ subroutine input_mesh(mesh)
     if(i == 1) isNLGeom = .true.
     read(10,*) mesh%max_nrstep
     read(10,*) mesh%nnode
-    allocate(mesh%node(ndof, mesh%nnode))
+    allocate(mesh%node(3, mesh%nnode))
     do i=1, mesh%nnode
       read(10,*) id, mesh%node(1,i), mesh%node(2,i), mesh%node(3,i)
     enddo
@@ -55,12 +55,12 @@ subroutine init_mesh(mesh)
   allocate(mesh%estrain(6, mesh%nelem))
   allocate(mesh%estress(6, mesh%nelem))
   allocate(mesh%emises (mesh%nelem))
-  allocate(mesh%u (ndof*mesh%nnode))
-  allocate(mesh%du(ndof*mesh%nnode))
-  allocate(mesh%q (ndof*mesh%nnode))
-  allocate(mesh%f (ndof*mesh%nnode))
-  allocate(mesh%x (ndof*mesh%nnode))
-  allocate(mesh%b (ndof*mesh%nnode))
+  allocate(mesh%u (3*mesh%nnode))
+  allocate(mesh%du(3*mesh%nnode))
+  allocate(mesh%q (3*mesh%nnode))
+  allocate(mesh%f (3*mesh%nnode))
+  allocate(mesh%x (3*mesh%nnode))
+  allocate(mesh%b (3*mesh%nnode))
   mesh%nstrain = 0.0d0
   mesh%nstress = 0.0d0
   mesh%nmises  = 0.0d0

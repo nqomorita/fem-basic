@@ -15,6 +15,7 @@ subroutine stiff_matrix(mesh)
     call C3D8_stiff(mesh, icel, elem, stiff)
     call merge(mesh, elem, stiff)
   enddo
+
 end subroutine stiff_matrix
 
 subroutine merge(mesh, elem, stiff)
@@ -29,9 +30,9 @@ subroutine merge(mesh, elem, stiff)
     in = elem(i)
     jS = mesh%index(in-1) + 1
     jE = mesh%index(in)
-    do j = 1, 8
+    aa:do j = 1, 8
       do k = jS, jE
-        jn = elem(j)
+        jn = mesh%item(k)
         if(jn == elem(j))then
           mesh%A(9*k-8) = mesh%A(9*k-8) + stiff(3*j-2,3*i-2)
           mesh%A(9*k-7) = mesh%A(9*k-7) + stiff(3*j-2,3*i-1)
@@ -42,9 +43,10 @@ subroutine merge(mesh, elem, stiff)
           mesh%A(9*k-2) = mesh%A(9*k-2) + stiff(3*j  ,3*i-2)
           mesh%A(9*k-1) = mesh%A(9*k-1) + stiff(3*j  ,3*i-1)
           mesh%A(9*k  ) = mesh%A(9*k  ) + stiff(3*j  ,3*i  )
+          cycle aa
         endif
       enddo
-    enddo
+    enddo aa
   enddo
 end subroutine merge
 
@@ -94,6 +96,29 @@ subroutine bound_condition(mesh)
     if(ndof < dof) stop "*** error: 3 < dof"
     !val = mesh%bound(i)
     !mesh%B(3*in-3+dof) = val
+    do i = 1, mesh%nnode
+      jS = mesh%index(i-1) + 1
+      jE = mesh%index(i)
+      bb:do j = jS, jE
+        jn = mesh%item(j)
+        if(in < jn) cycle bb
+        if(in == jn)then
+          if(dof == 1)then
+            mesh%A(9*j-8) = 0.0d0
+            mesh%A(9*j-5) = 0.0d0
+            mesh%A(9*j-2) = 0.0d0
+          elseif(dof == 2)then
+            mesh%A(9*j-7) = 0.0d0
+            mesh%A(9*j-4) = 0.0d0
+            mesh%A(9*j-1) = 0.0d0
+          elseif(dof == 3)then
+            mesh%A(9*j-6) = 0.0d0
+            mesh%A(9*j-3) = 0.0d0
+            mesh%A(9*j  ) = 0.0d0
+          endif
+        endif
+      enddo bb
+    enddo
 
     jS = mesh%index(in-1) + 1
     jE = mesh%index(in)

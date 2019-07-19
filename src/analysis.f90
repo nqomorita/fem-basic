@@ -1,8 +1,10 @@
 
-subroutine static(mesh)
+subroutine static(mesh, monolis)
   use util
+  use mod_monolis_util
   implicit none
   type(meshdef) :: mesh
+  type(monolis_structure) :: monolis
   integer(kint) :: i
 
   mesh%u  = 0.0d0
@@ -14,7 +16,7 @@ subroutine static(mesh)
   call load_condition(mesh)
   call get_RHS(mesh)
   call bound_condition(mesh)
-  !call solver(mesh)
+  call solver(mesh, monolis)
   call stress_update(mesh)
   call delta_u_update(mesh)
   call u_update(mesh)

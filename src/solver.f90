@@ -20,6 +20,7 @@ subroutine solver(mesh, monolis)
   call monolis_solve(monolis%PRM, monolis%COM, monolis%MAT)
   !call LU(ndof*mesh%nnode, mesh%A, mesh%B, mesh%X)
   !call residual(ndof*mesh%nnode, mesh%A, mesh%B, mesh%X)
+write(*,"(1p3e12.4)")mesh%X
 
   nullify(monolis%MAT%index)
   nullify(monolis%MAT%item)
