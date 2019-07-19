@@ -1,11 +1,15 @@
 
-subroutine solver(mesh)
+subroutine solver(mesh, monolis)
   use util
+  use mod_monolis_util
+  use mod_monolis_solve
   implicit none
   type(meshdef) :: mesh
+  type(monolis_structure) :: monolis
 
-  call LU(ndof*mesh%nnode, mesh%A, mesh%B, mesh%X)
-  call residual(ndof*mesh%nnode, mesh%A, mesh%B, mesh%X)
+  call monolis_solve(monolis%PRM, monolis%COM, monolis%MAT)
+  !call LU(ndof*mesh%nnode, mesh%A, mesh%B, mesh%X)
+  !call residual(ndof*mesh%nnode, mesh%A, mesh%B, mesh%X)
 end subroutine solver
 
 subroutine LU(nndof, Ain, B, X)

@@ -66,10 +66,10 @@ program main
   call init_matrix(mesh)
 
   if(isNLGeom)then
-    call nonlinear_static(mesh)
+    call nonlinear_static(mesh, monolis)
   else
     !call static(mesh)
-    call nonlinear_static(mesh)
+    call nonlinear_static(mesh, monolis)
   endif
 
   call outout_res(mesh)

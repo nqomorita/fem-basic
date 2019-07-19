@@ -8,7 +8,7 @@ subroutine is_convergence(mesh)
   real(kdouble) :: bnrm, rnrm, rnrmmax
 
   bnrm = 0.0d0
-  do i=1,ndof*mesh%nnode
+  do i = 1, ndof*mesh%nnode
     bnrm = bnrm + mesh%B(i)*mesh%B(i)
   enddo
   bnrm = dsqrt(bnrm)
@@ -29,11 +29,11 @@ subroutine get_inverse_matrix(n, a, inv)
   real(kdouble) :: a(n,n), inv(n,n), tmp
 
   inv = 0.0d0
-  do i=1,n
+  do i = 1, n
     inv(i,i) = 1.0d0
   enddo
 
-  do i=1,n
+  do i = 1, n
     tmp = 1.0d0/a(i,i)
     do j=1,n
         a(j,i) =   a(j,i) * tmp

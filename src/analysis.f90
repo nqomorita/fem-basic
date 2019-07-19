@@ -14,16 +14,18 @@ subroutine static(mesh)
   call load_condition(mesh)
   call get_RHS(mesh)
   call bound_condition(mesh)
-  call solver(mesh)
+  !call solver(mesh)
   call stress_update(mesh)
   call delta_u_update(mesh)
   call u_update(mesh)
 end subroutine static
 
-subroutine nonlinear_static(mesh)
+subroutine nonlinear_static(mesh, monolis)
   use util
+  use mod_monolis_util
   implicit none
   type(meshdef) :: mesh
+  type(monolis_structure) :: monolis
   integer(kint) :: i, NRiter
   real(kdouble), allocatable :: q(:), f(:)
 
@@ -33,7 +35,7 @@ subroutine nonlinear_static(mesh)
 
   call load_condition(mesh)
 
-  do NRiter=1,mesh%max_nrstep
+  do NRiter = 1, mesh%max_nrstep
     mesh%cur_nrstep = NRiter
     write(*,"(a)")""
     write(*,"(a,i8)")"** NRiter:", NRiter
@@ -42,7 +44,7 @@ subroutine nonlinear_static(mesh)
     call get_RHS(mesh)
     call bound_condition(mesh)
     call is_convergence(mesh)
-    !call solver(mesh)
+    call solver(mesh, monolis)
     call stress_update(mesh)
     call delta_u_update(mesh)
   enddo

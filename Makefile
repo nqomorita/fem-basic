@@ -2,11 +2,17 @@ FC       = mpif90
 FFLAGS   = -O2 -fbounds-check -fbacktrace -ffpe-trap=invalid
 LDFLAGS  =
 
+# metis library
+METIS_DIR  = /Users/morita
+METIS_INC  =
+METIS_LIB  = -L$(METIS_DIR)/lib -lmetis
+
+# monolis library
 MONOLIS_DIR= /Users/morita/monolis
 MONOLIS_INC= -I $(MONOLIS_DIR)/include
 MONOLIS_LIB= -L$(MONOLIS_DIR)/lib -lmonolis
 
-LIBS     = $(MONOLIS_LIB)
+LIBS     = $(MONOLIS_LIB) $(METIS_LIB)
 INCLUDE  = -I ./include $(MONOLIS_INC)
 MOD_DIR  = -J ./include
 BIN_DIR  = ./bin
